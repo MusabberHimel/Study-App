@@ -1,0 +1,47 @@
+app/
+├── build.gradle.kts
+└── src/
+    └── main/
+        ├── AndroidManifest.xml
+        └── java/
+            └── com/
+                └── musabber/
+                    └── pomofocus/
+                        ├── PomodoroApp.kt
+                        ├── MainActivity.kt
+                        ├── data/
+                        │   ├── TimerManager.kt
+                        │   ├── repository/
+                        │   │   └── SessionRepository.kt
+                        │   └── local/
+                        │       ├── AppDatabase.kt
+                        │       ├── SessionDao.kt
+                        │       ├── SessionLog.kt
+                        │       └── SettingsDataStore.kt
+                        ├── service/
+                        │   └── TimerService.kt
+                        ├── ui/
+                        │   ├── components/
+                        │   │   ├── CircularTimer.kt
+                        │   │   └── AppIcons.kt
+                        │   ├── navigation/
+                        │   │   ├── AppNavigation.kt
+                        │   │   └── Screen.kt
+                        │   ├── screens/
+                        │   │   ├── AboutScreen.kt
+                        │   │   ├── MainScreen.kt
+                        │   │   ├── SettingsScreen.kt
+                        │   │   └── StatisticsScreen.kt
+                        │   └── theme/
+                        │       ├── Color.kt
+                        │       ├── Theme.kt
+                        │       └── Type.kt
+                        ├── util/
+                        │   ├── DndHelper.kt
+                        │   ├── NotificationHelper.kt
+                        │   ├── SoundHelper.kt
+                        │   └── VibrationHelper.kt
+                        └── viewmodel/
+                            ├── SettingsViewModel.kt
+                            ├── StatisticsViewModel.kt
+                            └── TimerViewModel.kt
