@@ -20,4 +20,3 @@ class PomodoroApp : Application() {
         TimerManager.initialize(this, database, settingsDataStore)
     }
 }
-}
