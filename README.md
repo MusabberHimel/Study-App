@@ -1,1 +1,2 @@
-# Study-App
+#designed for study
+#
