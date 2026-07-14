@@ -132,7 +132,88 @@ fun SettingsScreen(
                 )
             }
         }
+        item {
+            var showRestartDialog by remember { mutableStateOf(false) }
+            val localContext = LocalContext.current
 
+            // Launcher to create a new backup file
+            val createBackupLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/zip")
+            ) { uri ->
+                uri?.let {
+                    viewModel.exportBackup(localContext, it) { success ->
+                        if (success) {
+                            Toast.makeText(localContext, "Backup exported successfully!", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(localContext, "Failed to export backup.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+
+            // Launcher to select and restore an existing backup file
+            val restoreBackupLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                uri?.let {
+                    viewModel.importBackup(localContext, it) { success ->
+                        if (success) {
+                            showRestartDialog = true
+                        } else {
+                            Toast.makeText(localContext, "Failed to restore backup. Check file integrity.", Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            }
+
+            SettingsSectionHeader("Offline Backup & Restore")
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            Text(
+                text = "Securely save your study history, configurations, and settings to a local file. You can restore it later or migrate it to another device.",
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Button(
+                    onClick = {
+                        createBackupLauncher.launch("pomofocus_backup.zip")
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Export Backup", fontSize = 12.sp)
+                }
+                
+                OutlinedButton(
+                    onClick = {
+                        restoreBackupLauncher.launch(arrayOf("application/zip", "application/octet-stream", "*/*"))
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Import Backup", fontSize = 12.sp)
+                }
+            }
+
+            if (showRestartDialog) {
+                AlertDialog(
+                    onDismissRequest = { /* Force restart action, cannot dismiss */ },
+                    confirmButton = {
+                        Button(
+                            onClick = { BackupHelper.restartApp(localContext) }
+                        ) {
+                            Text("Restart Now")
+                        }
+                    },
+                    title = { Text("Restore Successful") },
+                    text = { Text("To safely load your restored preferences and database history, the application must restart. Tap below to complete.") }
+                )
+            }
+        }
         item {
             SettingsSectionHeader("Do Not Disturb")
             Spacer(modifier = Modifier.height(12.dp))
