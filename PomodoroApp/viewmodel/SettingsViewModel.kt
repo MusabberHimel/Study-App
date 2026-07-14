@@ -141,4 +141,20 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             withContext(Dispatchers.Main) { onResult(false) }
         }
     }
+    fun importBackup(context: Context, uri: Uri, onResult: (Boolean) -> Unit) {
+    viewModelScope.launch(Dispatchers.IO) {
+        try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                val success = BackupHelper.importBackup(context, inputStream)
+                withContext(Dispatchers.Main) {
+                    onResult(success)
+                }
+            } ?: run {
+                withContext(Dispatchers.Main) { onResult(false) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) { onResult(false) }
+        }
+    }
 }
