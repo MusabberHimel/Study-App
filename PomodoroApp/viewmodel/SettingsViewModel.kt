@@ -10,6 +10,11 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.net.Uri
+import com.musabber.pomofocus.util.BackupHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
     private val app = application as PomodoroApp
@@ -118,6 +123,22 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun setIcon(icon: String) {
         viewModelScope.launch {
             settingsDataStore.saveIcon(icon)
+        }
+    }
+    fun exportBackup(context: Context, uri: Uri, onResult: (Boolean) -> Unit) {
+    viewModelScope.launch(Dispatchers.IO) {
+        try {
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                val success = BackupHelper.exportBackup(context, outputStream)
+                withContext(Dispatchers.Main) {
+                    onResult(success)
+                }
+            } ?: run {
+                withContext(Dispatchers.Main) { onResult(false) }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            withContext(Dispatchers.Main) { onResult(false) }
         }
     }
 }
